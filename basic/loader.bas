@@ -1,7 +1,7 @@
 10 poke 53280,0:poke 53281,0:print chr$(147);:poke 646,1
 80 restore:for a=49154 to 49317:read i:poke a,i:next
 90 dn%=peek(186):sys 49154:poke 198,0
-110 get a$: if a$="" then 110
+110 get a$: if a$="" and peek(56320)=127 then 110
 120 poke 53265,peek(53265) and 223
 130 poke 53272,(peek(53272) and 240) or 4
 135 poke 53270, peek(53270) and 255-16
