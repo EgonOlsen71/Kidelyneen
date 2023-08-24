@@ -1,4 +1,6 @@
-10 gosub 500:gosub 1000:gosub 40000
+5 rem kidelyneen - egonolsen/2023
+6 rem ***************************
+10 gosub 500:gosub 25000:gosub 1000:gosub 40000
 20 gosub 8300:gosub 8200
 30 gosub 2000
 40 end
@@ -280,6 +282,29 @@
 24110 for i=1064 to 1944 step 40:poke i,bc%:next
 24120 for i=1103 to 1983 step 40:poke i,bc%:next
 24130 return
+
+25000 rem intro screen
+25010 poke 53280,0:poke 53281,0:poke 646,1:poke 53269,0
+25020 print chr$(147);
+25030 y%=3:a$="kidelyneen":gosub 26000
+25070 poke 646,5:y%=8:a$="the evil kidney-chicken-mutant":gosub 26000
+25080 y%=9:a$="wants to kill you, his creator!":gosub 26000
+25090 y%=10:a$="try to wall him in before he gets you":gosub 26000
+25100 y%=11:a$="or you'll become chicken feed!":gosub 26000
+25120 poke 646,12:y%=23:a$="egonolsen/2023":gosub 26000
+25130 y%=24:a$="compiled with mospeed":gosub 26000
+25400 get a$:if a$="" and peek(56320)=127 then 25400
+25410 for i=0 to 25:print:next
+25420 return
+
+26000 rem center text in a$, y pos in y%
+26010 x%=20-len(a$)/2
+26020 gosub 34500
+26030 print a$;:return
+
+34500 rem set cursor at x%,y%
+34510 poke 781,y%:poke 782,x%:poke 783,0:sys 65520
+34520 return
 
 40000 rem init sprite
 40020 poke 53269,0:poke 53248,0:poke 53249,0
