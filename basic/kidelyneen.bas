@@ -27,12 +27,12 @@
 
 1800 rem check game over
 1810 gosub 1200:if pc>=mf then gosub 1900:return
-1815 rem return: rem uncomment to disable enemy
+1815 os%=ps%
 1820 if kf%<>1 then return
 1825 gosub 8500:ps%=pr%:if pr%=-1 then ps%=1043
 1830 li%=li%-1:gosub 8200
-1840 kf%=0:bl%=0:jo%=0:if li%=0 then 1950
-1850 gosub 22000:return
+1840 kf%=0:jo%=0:if li%=0 then 1950
+1850 gosub 22000:bl%=0:return
 
 1900 rem epic win sequence
 1910 for i=0 to 10:for p=0 to 255:poke 53281,p:next p,i
@@ -157,10 +157,10 @@
 8000 rem enemy collision
 8010 ct=nq%+54272
 8020 nq%=qp%
-8030 if (peek(ct-1) and 15)=7 then kf%=1
-8040 if (peek(ct+1) and 15)=7 then kf%=1
-8050 if (peek(ct-40) and 15)=7 then kf%=1
-8060 if (peek(ct+40) and 15)=7 then kf%=1
+8030 if (peek(ct-1) and 2)=2 then kf%=1
+8040 if (peek(ct+1) and 2)=2 then kf%=1
+8050 if (peek(ct-40) and 2)=2 then kf%=1
+8060 if (peek(ct+40) and 2)=2 then kf%=1
 8070 ec%=ec%+10:if ec%>280 then ec%=-100
 8080 return
 
@@ -262,6 +262,7 @@
 20100 return
 
 22000 rem remove incomplete polygons
+22005 if bl%=0 then poke 54272+os%,5:return
 22010 i%=1064
 22020 if peek(i%)<>dc% then 22050
 22030 ct=i%+54272:cv%=peek(ct) and 2
