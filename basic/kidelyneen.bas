@@ -130,7 +130,7 @@
 6030 return
 
 7000 rem process main enemy
-7002 ed%=ed%-1+(bl%>0)*5:if ed%>0 then return
+7002 ed%=ed%-1+(bl%>0)*5:if ed%>0 then cv%=qp%:gosub 8100:return
 7005 ed%=sd%:gosub 7500
 7010 pv%=qp%:gosub 3600
 7020 poke 53249,y%
@@ -148,13 +148,9 @@
 7518 if peek(53266)>150 then 7525
 7520 if ax%<ay% then xd%=0:goto 7525
 7521 if ay%<ax% then yd%=0
-7525 ec%=ec%-1:if ax%>=2 then nq%=nq%-sgn(xd%)
-7530 if ay%>=2 then nq%=nq%-sgn(yd%)*40
-7540 if peek(nq%-1)>32 then gosub 8000:goto 7600
-7550 if peek(nq%+1)>32 then gosub 8000:goto 7600
-7560 if peek(nq%-40)>32 then gosub 8000:goto 7600
-7570 if peek(nq%+40)>32 then gosub 8000
-7600 qp%=nq%
+7525 ec%=ec%-1:if ax%>0 then nq%=nq%-sgn(xd%)
+7530 if ay%>0 then nq%=nq%-sgn(yd%)*40
+7600 cv%=nq%:gosub 8100:qp%=nq%
 7610 if pj%=qp% then oj%=oj%+1:if oj%=10 then ec%=1:return
 7620 pj%=qp%:oj%=0:return
 
@@ -167,6 +163,13 @@
 8060 if (peek(ct+40) and 15)=7 then kf%=1
 8070 ec%=ec%+10:if ec%>280 then ec%=-100
 8080 return
+
+8100 rem actual collision check
+8110 if peek(cv%-1)>32 then gosub 8000:goto 8150
+8120 if peek(cv%+1)>32 then gosub 8000:goto 8150
+8130 if peek(cv%-40)>32 then gosub 8000:goto 8150
+8140 if peek(cv%+40)>32 then gosub 8000
+8150 return
 
 8200 rem print lives
 8210 a$=str$(li%):a$=chr$(83)+":"+mid$(a$,2)
