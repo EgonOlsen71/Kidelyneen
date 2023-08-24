@@ -1,2 +1,2 @@
 # Kidelyneen
-A Qix inspired game in Commodore BASIC V2
+A Qix inspired game in (compiled) Commodore BASIC V2.
