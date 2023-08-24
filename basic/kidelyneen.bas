@@ -156,7 +156,7 @@
 
 8000 rem enemy collision
 8010 ct=nq%+54272
-8020 nq%=qp%
+8020 nq%=qp%:if bl%=0 then 8070
 8030 if (peek(ct-1) and 2)=2 then kf%=1
 8040 if (peek(ct+1) and 2)=2 then kf%=1
 8050 if (peek(ct-40) and 2)=2 then kf%=1
