@@ -35,11 +35,11 @@
 1900 rem epic win sequence
 1910 for i=0 to 10:for p=0 to 255:poke 53281,p:next p,i
 1920 sd%=sd%-4:if sd%<5 then sd%=5
-1930 jo%=0:gosub 1000:
+1930 jo%=0:gosub 1000
 1940 gosub 8300:return
 
 1950 rem epic death sequence
-1960 for i=0 to 1000:poke 53280,i and 1:next i
+1960 gosub 8400:for i=0 to 1000:poke 53281,i and 1:next i
 1970 run
 
 1999 rem player movement, main game loop
@@ -80,17 +80,21 @@
 
 3200 rem left
 3205 if bl%=4 then nc%=1:goto 2040
-3210 ps%=ps%-1:if int((ps%-1024)/40)<int((po%-1024)/40) then ps%=po%
+3210 ps%=ps%-1:gosub 3400:if xs%<xo% then ps%=po%
 3215 bf%=3:gosub 2500
 3220 goto 2040
 
 3300 rem right
 3305 if bl%=3 then nc%=1:goto 2040
-3310 ps%=ps%+1:if int((ps%-1024)/40)>int((po%-1024)/40) then ps%=po%
+3310 ps%=ps%+1:gosub 3400:if xs%>xo% then ps%=po%
 3315 bf%=4:gosub 2500
 3320 goto 2040
 
-3500 rem calc x/y
+3400 rem calculate x for ps%/po%
+3410 xs%=(ps%-1024)/40:xo%=(po%-1024)/40
+3420 return
+
+3500 rem calculate x/y
 3510 pv%=pv%-1024
 3520 y%=pv%/40:x%=pv%-(y%*40)
 3530 return
@@ -101,7 +105,7 @@
 3630 return
 
 4000 rem fill
-4010 poke 53280,15:gosub 24000
+4010 poke 53280,12:gosub 24000
 4020 pv%=qp%:gosub 3500
 4050 gosub 10300
 4080 gosub 5500
@@ -173,6 +177,11 @@
 8330 sp%=960:gosub 20000
 8340 return
 
+8400 rem print game over
+8410 a$="rip":gosub 9000:sp%=896:gosub 20000
+8420 sp%=960:gosub 20000
+8430 return
+
 8500 rem death animation
 8540 for i=0 to 3:ac%(i)=ps%:next:gosub 8800
 8580 for i=0 to 23:for p=0 to 3
@@ -194,6 +203,11 @@
 8840 ac%(2)=ac%(2)+39
 8850 ac%(3)=ac%(3)-39
 8860 return
+
+9000 rem convert into screen codes
+9010 b$="":for i=1 to len(a$)
+9020 b$=b$+chr$(asc(mid$(a$,i))-64)
+9030 next:a$=b$:return
 
 10300 rem flood fill
 10305 sa%=1024:ta%=8192:se%=2024:gosub 10950
@@ -230,16 +244,16 @@
 
 20000 rem copy a$ into sprite sp%
 20005 a$=right$("   "+a$,3)
-20010 poke 56334, peek(56334) and 254
-20020 poke 1, peek(1) and 251
+20010 poke 56334,peek(56334) and 254
+20020 poke 1,peek(1) and 251
 20030 for i=1 to 3:c$=mid$(a$,i,1)
 20040 i%=sp%-1+i:ch=53248+asc(c$)*8:ai%=0
 20050 poke i%,peek(ch)
 20060 ch=ch+1:i%=i%+3:ai%=ai%+1
 20070 if ai%<8 then 20050 
 20075 next
-20080 poke 1, peek(1) or 4
-20090 poke 56334, peek(56334) or 1
+20080 poke 1,peek(1) or 4
+20090 poke 56334,peek(56334) or 1
 20100 return
 
 22000 rem remove incomplete polygons
