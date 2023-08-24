@@ -6,13 +6,14 @@
 40 end
 
 500 rem preinit
-510 dim ac%(3):sd%=40:li%=3
+510 dim ac%(3),ad%(1,1):sd%=40:li%=3
 520 print chr$(8);chr$(142);:i=rnd(0)
-530 return
+530 ad%(0,0)=1:ad%(0,1)=40:ad%(1,0)=39:ad%(1,1)=41
+540 return
 
 1000 rem reinit
 1005 poke 646,1:print chr$(147);
-1010 poke 53280,11:poke 53281,11:bc%=224:dc%=160
+1010 poke 53280,11:poke 53281,11:bc%=224:dc%=160:fx%=0
 1030 ps%=1043:ft%=126:ed%=0:ie%=1:ec%=0:mf=0.7:zp%=0:pj%=0:oj%=0
 1040 x%=rnd(1)*20+10:y%=5+rnd(1)*15:qp%=y%*40+x%+1024
 1050 gosub 24000
@@ -45,7 +46,7 @@
 1970 run
 
 1999 rem player movement, main game loop
-2000 pm%=ps%:bl%=0:kf%=0:pr%=-1:pj%=0:oj%=0
+2000 pm%=ps%:bl%=0:kf%=0:pr%=-1:pj%=0:oj%=0:fx%=0
 2002 gosub 2200::cf%=0
 2003 pp%=peek(ps%):poke ps%,dc%:poke ct,2
 2005 gosub 7000:jo%=peek(56320)
@@ -157,19 +158,20 @@
 8000 rem enemy collision
 8010 ct=nq%+54272
 8020 nq%=qp%:if bl%=0 then 8070
-8030 if (peek(ct-1) and 2)=2 then kf%=1
-8040 if (peek(ct+1) and 2)=2 then kf%=1
-8050 if (peek(ct-40) and 2)=2 then kf%=1
-8060 if (peek(ct+40) and 2)=2 then kf%=1
+8030 if (peek(ct-a0%) and 2)=2 then kf%=1
+8040 if (peek(ct+a0%) and 2)=2 then kf%=1
+8050 if (peek(ct-a1%) and 2)=2 then kf%=1
+8060 if (peek(ct+a1%) and 2)=2 then kf%=1
 8070 ec%=ec%+10:if ec%>280 then ec%=-100
 8080 return
 
 8100 rem actual collision check
-8110 if peek(cv%-1)>32 then gosub 8000:goto 8150
-8120 if peek(cv%+1)>32 then gosub 8000:goto 8150
-8130 if peek(cv%-40)>32 then gosub 8000:goto 8150
-8140 if peek(cv%+40)>32 then gosub 8000
-8150 return
+8105 a0%=ad%(fx%,0):a1%=ad%(fx%,1)
+8110 if peek(cv%-a0%)>32 then gosub 8000:goto 8150
+8120 if peek(cv%+a0%)>32 then gosub 8000:goto 8150
+8130 if peek(cv%-a1%)>32 then gosub 8000:goto 8150
+8140 if peek(cv%+a1%)>32 then gosub 8000
+8150 fx%=(fx%+1) and 1:return
 
 8200 rem print lives
 8210 a$=str$(li%):a$=chr$(83)+":"+mid$(a$,2)
