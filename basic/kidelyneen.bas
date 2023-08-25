@@ -9,7 +9,7 @@
 510 dim ac%(3),ad%(1,1):sd%=40:li%=3
 520 print chr$(8);chr$(142);:i=rnd(0)
 530 ad%(0,0)=1:ad%(0,1)=40:ad%(1,0)=39:ad%(1,1)=41
-540 return
+540 gosub 27000:return
 
 1000 rem reinit
 1005 poke 646,1:print chr$(147);
@@ -36,21 +36,24 @@
 1850 gosub 22000:bl%=0:return
 
 1900 rem epic win sequence
-1910 for i=0 to 10:for p=0 to 255:poke 53281,p:next p,i
+1910 for i=0 to 2:gosub 39850:for p=0 to 255:gosub 28500
+1915 poke 53287,p:poke 53281,255-p:next p,i
 1920 sd%=sd%-4:if sd%<5 then sd%=5
-1930 jo%=0:gosub 1000
+1930 jo%=0:poke 53287,13:gosub 1000
 1940 gosub 8300:return
 
-1950 rem epic death sequence
-1960 gosub 8400:for i=0 to 1000:poke 53281,i and 1:next i
-1970 run
+1950 rem epic game over sequence
+1960 poke 53277,7:poke 53271,7:gosub 8400:gosub 39500
+1970 for i=0 to 800:gosub 28500:poke 53281,i and 1:next i
+1980 run
 
 1999 rem player movement, main game loop
 2000 pm%=ps%:bl%=0:kf%=0:pr%=-1:pj%=0:oj%=0:fx%=0
 2002 gosub 2200::cf%=0
 2003 pp%=peek(ps%):poke ps%,dc%:poke ct,2
 2005 gosub 7000:jo%=peek(56320)
-2010 gosub 1800:if jo%=0 then 2000
+2008 if jo%=111 then gosub 39850
+2010 gosub 28500:gosub 1800:if jo%=0 then 2000
 2015 if jo%=127 then 2002
 2020 po%=ps%:gosub 2200
 2025 nc%=0
@@ -108,7 +111,7 @@
 3630 return
 
 4000 rem fill
-4010 poke 53280,12:gosub 24000
+4010 poke 53280,12:gosub 39880
 4020 pv%=qp%:gosub 3500
 4050 gosub 10300
 4080 gosub 5500
@@ -151,17 +154,18 @@
 7521 if ay%<ax% then yd%=0
 7525 ec%=ec%-1:if ax%>0 then nq%=nq%-sgn(xd%)
 7530 if ay%>0 then nq%=nq%-sgn(yd%)*40
+7540 if ec%=0 then gosub 39850
 7600 cv%=nq%:gosub 8100:qp%=nq%
 7610 if pj%=qp% then oj%=oj%+1:if oj%=10 then ec%=1:return
 7620 pj%=qp%:oj%=0:return
 
 8000 rem enemy collision
 8010 ct=nq%+54272
-8020 nq%=qp%:if bl%=0 then 8070
-8030 if (peek(ct-a0%) and 2)=2 then kf%=1
-8040 if (peek(ct+a0%) and 2)=2 then kf%=1
-8050 if (peek(ct-a1%) and 2)=2 then kf%=1
-8060 if (peek(ct+a1%) and 2)=2 then kf%=1
+8020 oq%=nq%:nq%=qp%:if bl%=0 then 8070
+8030 if (peek(ct-a0%) and 2)=2 then kf%=1:nq%=oq%:goto 8070
+8040 if (peek(ct+a0%) and 2)=2 then kf%=1:nq%=oq%:goto 8070
+8050 if (peek(ct-a1%) and 2)=2 then kf%=1:nq%=oq%:goto 8070
+8060 if (peek(ct+a1%) and 2)=2 then kf%=1:nq%=oq%
 8070 ec%=ec%+10:if ec%>280 then ec%=-100
 8080 return
 
@@ -190,7 +194,7 @@
 8430 return
 
 8500 rem death animation
-8540 for i=0 to 3:ac%(i)=ps%:next:gosub 8800
+8540 for i=0 to 3:ac%(i)=ps%:next:gosub 8800:gosub 39650
 8580 for i=0 to 23:for p=0 to 3
 8585 if ac%(p)<1024 or ac%(p)>2023 then 8610
 8590 ct=54272+ac%(p):poke 704+p,peek(ac%(p)):poke 708+p,peek(ct)
@@ -209,7 +213,8 @@
 8830 ac%(1)=ac%(1)+41
 8840 ac%(2)=ac%(2)+39
 8850 ac%(3)=ac%(3)-39
-8860 return
+8860 gosub 28500
+8870 return
 
 9000 rem convert into screen codes
 9010 b$="":for i=1 to len(a$)
@@ -242,7 +247,7 @@
 
 10699 rem push
 10700 z%=ad%/256:z$=chr$(z%):h$=h$+z$:l$=l$+chr$(ad%-256*z%)
-10710 return
+10720 return
 
 10950 rem copy
 10960 poke ta%,peek(sa%):ta%=ta%+1:sa%=sa%+1
@@ -298,8 +303,8 @@
 25090 y%=10:a$="try to wall him in before he gets you":gosub 26000
 25100 y%=11:a$="or you'll become chicken feed!":gosub 26000
 25120 poke 646,12:y%=23:a$="egonolsen/2023":gosub 26000
-25130 y%=24:a$="compiled with mospeed":gosub 26000
-25400 get a$:if a$="" and peek(56320)=127 then 25400
+25130 y%=24:a$="compiled with mospeed":gosub 26000:gosub 39600
+25400 gosub 28500:get a$:if a$="" and peek(56320)=127 then 25400
 25410 for i=0 to 25:print:next
 25420 return
 
@@ -308,22 +313,74 @@
 26020 gosub 34500
 26030 print a$;:return
 
+27000 rem init sound routine
+27010 dim vt%(2),vl(2),vw%(2):vc%=0:ac%=0
+27020 si=54272:poke si+24,0
+27030 for i=si to si+24:poke i,0:next
+27040 poke si+24,15:return
+
+28000 rem play sound
+28005 ic%=0:gosub 28500
+28010 if vw%(vc%)=0 then 28100
+28020 vc%=vc%+1:ic%=ic%+1
+28030 if vc%=3 then vc%=0
+28040 if ic%=3 then return
+28050 goto 28010
+28100 tt=ti:sb=si+vc%*7
+28110 poke sb+5,at%*16+dd%
+28120 poke sb+6,el%*16+rl%
+28130 poke sb,lq%:poke sb+1,hq%
+28140 vw%(vc%)=wf%:vl(vc%)=tt:poke si+24,15:poke sb+4,wf%+1
+28150 pt%=pt%+pt%:vt%(vc%)=pt%:ac%=ac%+1
+28160 if im%=0 then return
+28170 tt=ti:if tt-vl(vc%)<pt% then 28170
+28180 poke sb+4,wf%:vw%(vc%)=0:ac%=ac%-1
+28190 vc%=vc%+1:if vc%=3 then vc%=0
+28200 return
+
+28500 rem check sound playback
+28502 if ac%=0 then return
+28505 ts=tt:tt=ti:if ts>tt then vw%(0)=0:vw%(1)=0:vw%(2)=0
+28510 for hh=0 to 2:if vw%(hh)=0 or tt-vl(hh)<vt%(hh) then 28540
+28520 poke si+hh*7+4,vw%(hh):vw%(hh)=0:ac%=ac%-1
+28540 next:return
+
 34500 rem set cursor at x%,y%
 34510 poke 781,y%:poke 782,x%:poke 783,0:sys 65520
 34520 return
 
-40000 rem init sprite
+39500 rem game over sound
+39510 at%=5:dd%=17:el%=4:rl%=4:lq%=180:hq%=15
+39520 wf%=16:pt%=40:im%=0:gosub 28000
+39530 at%=10:dd%=13:el%=3:rl%=3:lq%=180:hq%=12
+39540 wf%=16:pt%=45:im%=0:gosub 28000
+39550 return
+
+39600 rem whoop sound
+39610 at%=9:dd%=8:el%=0:rl%=0:lq%=180:hq%=5
+39620 wf%=16:pt%=30:im%=0:gosub 28000:return
+
+39650 rem fire sound
+39660 at%=1:dd%=8:el%=0:rl%=0:lq%=180:hq%=5
+39670 wf%=128:pt%=30:im%=0:gosub 28000:return
+
+39850 rem chicken sound
+39860 at%=5:dd%=0:el%=3:rl%=1:lq%=180:hq%=13
+39870 wf%=32:pt%=11:im%=0:gosub 28000:return
+
+39880 rem short beep sound
+39885 at%=1:dd%=1:el%=4:rl%=2:lq%=180:hq%=22
+39890 wf%=16:pt%=6:im%=1:gosub 28000:return
+
+40000 rem init sprites
 40020 poke 53269,0:poke 53248,0:poke 53249,0
 40022 poke 53250,32:poke 53251,60
-40024 poke 53252,32:poke 53253,60
-40026 poke 53264,4
+40024 poke 53252,32:poke 53253,60:poke 53264,4
 40030 for i=832 to 832+63: read y%: poke i,y%: next
+40035 for i=896 to 1022:poke i,0:next
 40040 poke 53287,13: poke 53288,10:poke 53289,0
 40050 poke 2040,13:poke 2041,14:poke 2042,15
-40060 poke 53276,0
-40070 poke 53277,6
-40080 poke 53271,6
-40085 for i=896 to 1022:poke i,0:next
+40060 poke 53276,0:poke 53277,6:poke 53271,6
 40086 poke 53269,7:return
 40090 data 0,0,0,0,48,0,0,254,28,3,238,62,7,254,126,4
 40100 data 252,254,9,255,254,18,127,158,52,255,156,63,255,252,63,255
