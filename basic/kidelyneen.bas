@@ -44,7 +44,7 @@
 
 1950 rem epic game over sequence
 1960 poke 53277,7:poke 53271,7:gosub 8400:gosub 39500
-1970 for i=0 to 800:gosub 28500:poke 53281,i and 1:next i
+1970 for i=0 to 800:gosub 28500:poke 53281,i and 3:next i
 1980 run
 
 1999 rem player movement, main game loop
@@ -52,7 +52,6 @@
 2002 gosub 2200::cf%=0
 2003 pp%=peek(ps%):poke ps%,dc%:poke ct,2
 2005 gosub 7000:jo%=peek(56320)
-2008 if jo%=111 then gosub 39850
 2010 gosub 28500:gosub 1800:if jo%=0 then 2000
 2015 if jo%=127 then 2002
 2020 po%=ps%:gosub 2200
@@ -247,6 +246,7 @@
 
 10699 rem push
 10700 z%=ad%/256:z$=chr$(z%):h$=h$+z$:l$=l$+chr$(ad%-256*z%)
+10710 gosub 28500
 10720 return
 
 10950 rem copy
