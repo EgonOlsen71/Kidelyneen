@@ -16,7 +16,7 @@
 1010 poke 53280,11:poke 53281,11:bc%=224:dc%=160:fx%=0
 1030 ps%=1043:ft%=126:ed%=0:ie%=1:ec%=0:mf=0.7:zp%=0:pj%=0:oj%=0
 1040 x%=rnd(1)*20+10:y%=5+rnd(1)*15:qp%=y%*40+x%+1024
-1050 gosub 24000
+1050 le%=2003:lt%=0:l0%=0:l1%=0:gosub 24000
 1080 return
 
 1200 rem calculate percentage
@@ -31,7 +31,7 @@
 1815 os%=ps%
 1820 if kf%<>1 then return
 1825 gosub 8500:ps%=pr%:if pr%=-1 then ps%=1043
-1830 li%=li%-1:gosub 8200
+1830 le%=2003:li%=li%-1:gosub 8200
 1840 kf%=0:jo%=0:if li%=0 then 1950
 1850 gosub 22000:bl%=0:return
 
@@ -51,7 +51,7 @@
 2000 pm%=ps%:bl%=0:kf%=0:pr%=-1:pj%=0:oj%=0:fx%=0
 2002 gosub 2200::cf%=0
 2003 pp%=peek(ps%):poke ps%,dc%:poke ct,2
-2005 gosub 7000:jo%=peek(56320)
+2005 gosub 7000:gosub 17000:gosub 19000
 2010 gosub 28500:gosub 1800:if jo%=0 then 2000
 2015 if jo%=127 then 2002
 2020 po%=ps%:gosub 2200
@@ -137,8 +137,8 @@
 7005 ed%=sd%:gosub 7500
 7010 pv%=qp%:gosub 3600
 7020 poke 53249,y%
-7030 if x%>255 then poke 53248,x%-255:poke 53264,5:goto 7050
-7040 poke 53248,x%:poke 53264,4
+7030 if x%>255 then poke 53248,x%-255:poke 53264,peek(53264) or 1:goto 7050
+7040 poke 53248,x%:poke 53264,peek(53264) and 254
 7050 return
 
 7500 rem move main enemy
@@ -253,6 +253,51 @@
 10960 poke ta%,peek(sa%):ta%=ta%+1:sa%=sa%+1
 10980 if sa%<se% then 10960
 10990 return
+
+17000 rem move line enemy
+17005 if le%=ps% then kf%=1:return
+17010 gosub 18000
+17015 pv%=le%:gosub 3600:x%=x%
+17020 poke 53255,y%-1
+17030 if x%>255 then poke 53254,x%-255:poke 53264,peek(53264) or 8:goto 17060
+17040 poke 53254,x%:poke 53264,peek(53264) and 247
+17060 return
+
+18000 rem process target for line enemy
+18001 if le%=lt% then lt%=0
+18002 cv%=rnd(1)>0.01
+18004 if lt%>0 then if cv% then 18100
+18005 if cv% then 18020
+18010 if lt%<1500 then lt%=1984:goto 18040
+18015 lt%=1024
+18020 if le%>1500 then lt%=1024:goto 18040
+18030 lt%=1984
+18040 lt%=lt%+rnd(1)*40
+18100 yd%=40:if lt%<=1500 then yd%=-40
+18110 xd%=1:if (lt% and 1)=1 then xd%=-1
+18115 x%=lt%-le%:if abs(x%)<40 then xd%=sgn(x%)
+18120 cv%=le%+yd%:gosub 18500
+18130 if yd%=5 then 18145
+18140 cv%=le%+xd%:gosub 18500:if yd%=5 then 18145
+18142 cv%=le%-xd%:gosub 18500
+18145 if cv%>2023 or cv%<1024 then 18200
+18150 if cv%=ps% then kf%=1:le%=cv%
+18160 if yd%=5 then le%=cv%
+18200 if l0%=le% then l1%=0:lt%=0
+18210 l0%=l1%:l1%=le%:return
+
+18500 rem color below line enemy
+18510 if peek(cv%)=32 then yd%=1:return
+18520 yd%=(peek(cv%+54272) and 15)
+18530 if yd%=2 then yd%=5
+18540 return
+
+19000 rem check joystick
+19010 jo%=peek(56320)
+19015 if jo%=127 then ts=0:goto 19040
+19020 if ti>=ts+1 then ts=ti:goto 19040
+19030 jo%=127
+19040 return
 
 20000 rem copy a$ into sprite sp%
 20005 a$=right$("   "+a$,3)
@@ -379,10 +424,17 @@
 40030 for i=832 to 832+63: read y%: poke i,y%: next
 40035 for i=896 to 1022:poke i,0:next
 40040 poke 53287,13: poke 53288,10:poke 53289,0
-40050 poke 2040,13:poke 2041,14:poke 2042,15
-40060 poke 53276,0:poke 53277,6:poke 53271,6
-40086 poke 53269,7:return
+40050 poke 2040,13:poke 2041,14:poke 2042,15:poke 2043,144
+40060 poke 53276,8:poke 53277,6:poke 53271,6
+40065 poke 53254,0:poke 53255,0:poke 53290,15
+40070 for i=9216 to 9216+63: read y%: poke i,y%: next
+40075 poke 53285,2:poke 53286,7
+40086 poke 53269,15:return
 40090 data 0,0,0,0,48,0,0,254,28,3,238,62,7,254,126,4
 40100 data 252,254,9,255,254,18,127,158,52,255,156,63,255,252,63,255
 40110 data 254,15,199,255,1,207,255,3,231,177,3,247,96,3,255,64
 40120 data 0,255,192,0,127,0,0,0,0,0,0,0,0,0,0,13
+41010 data 0,0,0,0,0,0,0,0,0,0,0,0,0,44,0,0
+41020 data 47,0,0,190,0,0,186,0,0,186,0,2,185,0,2,249
+41030 data 0,3,169,0,2,233,0,2,169,0,2,171,0,2,100,0
+41040 data 0,148,0,0,0,0,0,0,0,0,0,0,0,0,0,129
