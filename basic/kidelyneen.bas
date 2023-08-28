@@ -250,8 +250,15 @@
 10720 return
 
 10950 rem copy
-10960 poke ta%,peek(sa%):ta%=ta%+1:sa%=sa%+1
-10980 if sa%<se% then 10960
+10951 rem [lda sa%!; sta 63; lda sa%!+1; sta 64]
+10952 rem [lda ta%!; sta 65; lda ta%!+1; sta 66; ldx #0]
+10953 rem [lda (63,x); sta (65,x);inc 63; inc 65; bne 10955!]
+10954 rem [inc 64; inc 66]
+10955 rem [lda 64; cmp se%!+1; bne 10953!]
+10956 rem [lda 63; cmp se%!; bne 10953!]
+10957 rem [jmp 10990!]
+10970 poke ta%,peek(sa%):ta%=ta%+1:sa%=sa%+1
+10980 if sa%<se% then 10970
 10990 return
 
 17000 rem move line enemy
