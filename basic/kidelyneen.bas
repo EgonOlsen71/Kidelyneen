@@ -222,13 +222,12 @@
 
 10300 rem flood fill
 10305 sa%=1024:ta%=8192:se%=2024:gosub 10950
-10320 sc%=8192:ch%=32:fc%=bc%
+10320 sc%=8192:ch%=32:fc%=bc%:sl%=9472:sh%=9472
 10400 ad%=sc%+40*y%+x%
-10410 h%=ad%/256:h$=chr$(h%)
-10420 l$=chr$(ad% and 255)
-10430 if h$="" then return
-10440 ad%=256*asc(h$)+asc(l$)
-10450 h$=right$(h$,len(h$)-1):l$=right$(l$,len(l$)-1)
+10410 gosub 10700
+10430 if sh%<=sl% then return
+10440 ad%=256*h%+l%
+10450 sl%=sl%+2:h%=peek(sl%+1):l%=peek(sl%)
 10460 if peek(ad%)>ch% then 10430
 10470 ad%=ad%-1
 10480 if peek(ad%)=ch% then 10470
@@ -245,7 +244,9 @@
 10610 goto 10430
 
 10699 rem push
-10700 z%=ad%/256:z$=chr$(z%):h$=h$+z$:l$=l$+chr$(ad% and 255)
+10700 z%=ad%/256:poke sh%+1,z%:z%=ad% and 255:poke sh%,z%
+10702 h%=peek(sl%+1):l%=peek(sl%)
+10705 sh%=sh%+2
 10710 gosub 28500
 10720 return
 
