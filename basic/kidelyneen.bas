@@ -225,7 +225,7 @@
 10320 sc%=8192:ch%=32:fc%=bc%
 10400 ad%=sc%+40*y%+x%
 10410 h%=ad%/256:h$=chr$(h%)
-10420 l$=chr$(ad%-256*h%)
+10420 l$=chr$(ad% and 255)
 10430 if h$="" then return
 10440 ad%=256*asc(h$)+asc(l$)
 10450 h$=right$(h$,len(h$)-1):l$=right$(l$,len(l$)-1)
@@ -245,7 +245,7 @@
 10610 goto 10430
 
 10699 rem push
-10700 z%=ad%/256:z$=chr$(z%):h$=h$+z$:l$=l$+chr$(ad%-256*z%)
+10700 z%=ad%/256:z$=chr$(z%):h$=h$+z$:l$=l$+chr$(ad% and 255)
 10710 gosub 28500
 10720 return
 
