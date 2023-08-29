@@ -406,9 +406,9 @@
 32000 rem fade out
 32001 x%=peek(53269):poke 53269,0
 32002 poke 53281,11:sa%=1024:se%=2024
-32010 cv%=32:az%=0
+32010 az%=0
 32020 ta%=sa%+az%
-32030 poke ta%,cv%
+32030 poke ta%,32
 32040 ta%=ta%+n%:if ta%<se% then 32030
 32050 az%=az%+1:if az%<=n% then 32020
 32060 poke 53269,x%:return
