@@ -24,10 +24,6 @@
 1200 rem calculate percentage
 1210 pc=(ft%-126)/874:return
 
-1500 rem copy back from buffer
-1510 sa%=8192:se%=9192:ta%=1024
-1520 gosub 10950:return
-
 1800 rem check game over
 1810 gosub 1200:if pc>=mf then gosub 1900:return
 1815 os%=ps%
